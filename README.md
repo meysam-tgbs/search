@@ -1,5 +1,5 @@
 # Search service 
-This is a sample test service as Interview task for Datak Company. It is built by Laravel 8 .
+This is a sample test service as an Interview task . It is built by Laravel 8 . 
 
 ## Installation
 In order to install service correctly follow these instructions below:
