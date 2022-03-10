@@ -36,6 +36,11 @@ class SearchService
         return $this->repository->findByUsername($this->type, $username);
     }
 
+    public function findByName(string $name)
+    {
+        return $this->repository->findByName($this->type, $name);
+    }
+
     public function findBySource(string $source)
     {
         return $this->repository->findBySource($this->type, $source);

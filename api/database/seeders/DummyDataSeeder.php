@@ -60,7 +60,7 @@ class DummyDataSeeder extends Seeder
             $twitter = (new Search())
                 ->setType(Search::TYPE_TWITTER)
                 ->setContent($this->faker->paragraph())
-                ->setUsername($this->faker->word())
+                ->setName($this->faker->word())
                 ->setRetweet(mt_rand(0, 10000))
                 ->setPhoto($this->faker->imageUrl(360, 360))
                 ->setAvatar($this->faker->imageUrl(120, 120))
@@ -71,5 +71,22 @@ class DummyDataSeeder extends Seeder
             $this->searchRepository->persist( $instagram );
             $this->searchRepository->persist( $twitter );
         }
+
+        $news->setDate('2020-02-20');
+        $news->setTitle('news-title');
+        $news->setSource(Search::SOURCE_CNN);
+
+        $instagram->setDate('2020-02-20');
+        $instagram->setTitle('instagram-title');
+        $instagram->setUsername('instagram');
+
+        $twitter->setDate('2020-02-20');
+        $twitter->setName('twitter');
+
+        // insert some specific data for test
+        $this->searchRepository->persist( $news );
+        $this->searchRepository->persist( $instagram );
+        $this->searchRepository->persist( $twitter );
+
     }
 }

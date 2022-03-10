@@ -24,7 +24,7 @@ class TwitterRequest extends FormRequest
     public function rules()
     {
         return [
-            'filter' => 'required|in:date,username',
+            'filter' => 'required|in:date,name',
             'value' => 'required|string',
         ];
     }

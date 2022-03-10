@@ -27,6 +27,7 @@ class SearchServiceTest extends TestCase
     public function testResultIfIsInstantiateOfSearch()
     {
         $searchModel = $this->service->findByDate($this->newsModel->getDate());
+
         $this->assertIsArray($searchModel);
         $this->assertNotEmpty($searchModel);
         $this->assertInstanceOf(Search::class, $searchModel[0]);
@@ -49,7 +50,16 @@ class SearchServiceTest extends TestCase
     public function testFindByUsername()
     {
         $this->service->setType(Search::TYPE_INSTAGRAM);
-        $searchModel = $this->service->findByUsername($this->instagramModel->getTitle());
+        $searchModel = $this->service->findByUsername($this->instagramModel->getUsername());
+        $this->service->setType(Search::TYPE_NEWS);
+
+        $this->assertNotEmpty($searchModel);
+    }
+
+    public function testFindByName()
+    {
+        $this->service->setType(Search::TYPE_TWITTER);
+        $searchModel = $this->service->findByName($this->twitterModel->getName());
         $this->service->setType(Search::TYPE_NEWS);
 
         $this->assertNotEmpty($searchModel);
@@ -57,7 +67,7 @@ class SearchServiceTest extends TestCase
 
     public function testFindBySource()
     {
-        $searchModel = $this->service->findByUsername($this->newsModel->getTitle());
+        $searchModel = $this->service->findBySource($this->newsModel->getSource());
 
         $this->assertNotEmpty($searchModel);
     }
@@ -86,6 +96,12 @@ class SearchServiceTest extends TestCase
         $this->assertEmpty($searchModel);
     }
 
+    public function testFindByNameIfInputIsInvalid()
+    {
+        $searchModel = $this->service->findByName('invalid_name_lorem_ipsum');
+        $this->assertEmpty($searchModel);
+    }
+
     private function init()
     {
         $this->newsModel = (New Search())
@@ -105,6 +121,7 @@ class SearchServiceTest extends TestCase
             ->setDate('2020-02-20')
             ->setTitle('test title')
             ->setPhoto('https://instagram.com/photo.jpg')
+            ->setVideo('https://instagram.com/video.mp4')
             ->setContent('test content')
             ->setName('Taylor Otwell')
             ->setAvatar('https://cnn.com/avatar.png')
@@ -129,7 +146,7 @@ class SearchServiceTest extends TestCase
 
     public function tearDown(): void
     {
-        parent::tearDown();
+        // parent::tearDown();
 
         $this->repository->delete($this->newsModel->getId());
         $this->repository->delete($this->instagramModel->getId());

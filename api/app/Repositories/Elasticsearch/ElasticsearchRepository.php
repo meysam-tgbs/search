@@ -7,6 +7,7 @@ use Elasticsearch\Client;
 use Elasticsearch\ClientBuilder;
 use Exception;
 use Symfony\Component\Serializer\SerializerInterface;
+use App\Repositories\Search;
 
 
 abstract class ElasticsearchRepository
@@ -54,11 +55,15 @@ abstract class ElasticsearchRepository
     public function persist(ElasticsearchRepositoryModelInterface $model = null): array
     {
         try {
-            return $this->elasticClient->index([
+            $params = [
                 'index' => static::getIndexName(),
                 'type' => self::INDEX_TYPE_DOC,
                 'body' => $model->toArray(),
-            ]);
+            ];
+            if ( !is_null($model->getId()) ) {
+                $params['id'] = $model->getId();
+            }
+            return $this->elasticClient->index($params);
         } catch (Exception $exception) {
             throw new ElasticsearchRepositoryException($exception->getMessage(), $exception->getCode(), $exception);
         }
@@ -88,6 +93,7 @@ abstract class ElasticsearchRepository
             ]);
             return true;
         } catch (Exception $exception) {
+            dd($exception->getMessage(), $exception->getFile(), $exception->getLine(), $exception);
             throw new ElasticsearchRepositoryException($exception->getMessage(), $exception->getCode(), $exception);
         }
     }

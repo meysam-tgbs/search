@@ -60,7 +60,6 @@ class SearchRepository extends ElasticsearchRepository
                         ],
                         'name' => [
                             'type' => 'text',
-                            'index' => false,
                         ],
                         'username' => [
                             'type' => 'text'
@@ -78,75 +77,6 @@ class SearchRepository extends ElasticsearchRepository
         ];
     }
 
-    public function search(string $query, string $lang, string $entityType = null, string $date = null): ?array
-    {
-        try {
-            $body = [
-                "query" => [
-                    "bool" => [
-                        "filter" => [
-                            [
-                                "query_string" => [
-                                    "fields" => ["entityType"],
-                                    "query" => $entityType ?? "*"
-                                ]
-                            ],
-                            [
-                                "match" => [
-                                    "lang" => $lang
-                                ]
-                            ],
-                            [
-                                "bool" => [
-                                    "should" => [
-                                        [
-                                            "query_string" => [
-                                                "fields" => ["label1"],
-                                                "query" => "*{$query}*"
-                                            ]
-                                        ],
-                                        [
-                                            "query_string" => [
-                                                "fields" => ["label2"],
-                                                "query" => "*{$query}*"
-                                            ]
-                                        ],
-                                        [
-                                            "query_string" => [
-                                                "fields" => ["label3"],
-                                                "query" => "*{$query}*"
-                                            ]
-                                        ]
-                                    ],
-                                ]
-                            ]
-                        ]
-                    ]
-                ],
-            ];
-
-            if ($date) {
-                $body['query']['bool']['filter'][] = [
-                    'range' => [
-                        'metadata.date' => [
-                            'gte' => $date,
-                            'format' => 'strict_date_optional_time'
-                        ]
-                    ]
-                ];
-            }
-
-            $results = $this->elasticClient->search([
-                'index' => static::getIndexName(),
-                'body' => $body,
-            ]);
-
-            return $this->deserializeResult($results);
-        } catch (\Exception $exception) {
-            return null;
-        }
-    }
-
     public function findByDate(string $type, string $datetime): ?array
     {
         try {
@@ -156,12 +86,18 @@ class SearchRepository extends ElasticsearchRepository
                         "must" => [
                             [
                                 "match" => [
-                                    "type" => $type,
+                                    "type" => [
+                                        'query' => $type,
+                                        'operator' => 'and'
+                                    ],
                                 ]
                             ],
                             [
                                 "match" => [
-                                    "date" => $datetime,
+                                    "date" => [
+                                        'query' => $datetime,
+                                        'operator' => 'and'
+                                    ]
                                 ]
                             ]
                         ]
@@ -190,12 +126,58 @@ class SearchRepository extends ElasticsearchRepository
                         "must" => [
                             [
                                 "match" => [
-                                    "type" => $type,
+                                    "type" => [
+                                        'query' => $type,
+                                        'operator' => 'and'
+                                    ],
                                 ]
                             ],
                             [
                                 "match" => [
-                                    "title" => $title,
+                                    "title" => [
+                                        'query' => $title,
+                                        'operator' => 'and'
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+
+                ],
+            ];
+
+            $results = $this->elasticClient->search([
+                'index' => static::getIndexName(),
+                'body' => $body,
+            ]);
+
+            return $this->deserializeResult($results);
+        } catch (\Exception $exception) {
+            return null;
+        }
+    }
+
+    public function findByName(string $type, string $name): ?array
+    {
+        try {
+            $body = [
+                "query" => [
+                    "bool" => [
+                        "must" => [
+                            [
+                                "match" => [
+                                    "type" => [
+                                        'query' => $type,
+                                        'operator' => 'and'
+                                    ],
+                                ]
+                            ],
+                            [
+                                "match" => [
+                                    "name" => [
+                                        'query' => $name,
+                                        'operator' => 'and'
+                                    ]
                                 ]
                             ]
                         ]
@@ -224,12 +206,18 @@ class SearchRepository extends ElasticsearchRepository
                         "must" => [
                             [
                                 "match" => [
-                                    "type" => $type,
+                                    "type" => [
+                                        'query' => $type,
+                                        'operator' => 'and'
+                                    ],
                                 ]
                             ],
                             [
                                 "match" => [
-                                    "username" => $username,
+                                    "username" => [
+                                        'query' => $username,
+                                        'operator' => 'and'
+                                    ]
                                 ]
                             ]
                         ]
@@ -258,12 +246,18 @@ class SearchRepository extends ElasticsearchRepository
                         "must" => [
                             [
                                 "match" => [
-                                    "type" => $type,
+                                    "type" => [
+                                        'query' => $type,
+                                        'operator' => 'and'
+                                    ],
                                 ]
                             ],
                             [
                                 "match" => [
-                                    "source" => $source,
+                                    "source" => [
+                                        'query' => $source,
+                                        'operator' => 'and'
+                                    ]
                                 ]
                             ]
                         ]

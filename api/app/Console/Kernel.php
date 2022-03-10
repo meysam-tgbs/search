@@ -3,13 +3,15 @@
 namespace App\Console;
 
 use App\Console\MakeIndexCommand;
+use App\Console\DropIndexCommand;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
 class Kernel extends ConsoleKernel
 {
     protected $commands = [
-      MakeIndexCommand::class
+      MakeIndexCommand::class,
+      DropIndexCommand::class,
     ];
 
     /**
