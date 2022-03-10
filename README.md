@@ -24,11 +24,28 @@ docker-compose exec php php artisan db seed
 ``` 
 
 ## Installation without docker
-In order install the project without Docker, First You need have an Elasticsearch server, then after installation Laravel you just need to set Elasticsearch config in the file `config/database.php`.
+In order install the project without Docker, First You need have an Elasticsearch server, then after installation Laravel you just need to set Elasticsearch config in the file `config/database.php` or set it in `.env file`:
+```
+ELASTIC_TRANSPORT=http
+ELASTIC_PORT=9200
+ELASTIC_HOST=elasticsearch
+ELASTIC_USERNAME=elastic
+ELASTIC_PASSWORD=123456
+ELASTIC_INDEX=search
+```
 
 ## Endpoints
-To see all endpoints you can use swagger.
- ```
-http://localhost:8000/docs
-http://localhost:8000/api/documentation
+```
+GET http://localhost:8000/api/search/(news|instagram|twitter)?filter=(date|title|username|name|source)&value=(2020-02-20|test title|username|taylor otwell|CNN)
+```
+
+## Tests
+To run test use below command:
+```
+docker-compose exec php php artisan test
+```
+
+## Drop Elasticsearch Index
+```
+docker-compose exec php php artisan drop:elastic:index
 ```
